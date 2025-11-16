@@ -125,7 +125,7 @@ public abstract class ConfigManager {
         else {
             try {
                 final T r = configClass.getDeclaredConstructor().newInstance();
-                saveConfig(configName, r, MOD_ID);
+                if(!saveConfig(configName, r, MOD_ID)) return null;
                 return r;
             } catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                 e.printStackTrace();
@@ -149,10 +149,10 @@ public abstract class ConfigManager {
                 writer.setLenient(false);
                 gson.toJson(config, config.getClass(), writer);
             }
+            return true;
         } catch(IOException e) {
             e.printStackTrace();
             return false;
         }
-        return true;
     }
 }
