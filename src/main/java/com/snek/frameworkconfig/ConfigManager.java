@@ -141,11 +141,14 @@ public abstract class ConfigManager {
 
         final Path configDir = FabricLoader.getInstance().getConfigDir().resolve(MOD_ID);
         final File configPath = configDir.resolve(configName + ".json").toFile();
-        try(JsonWriter writer = new JsonWriter(new FileWriter(configPath))) {
-            writer.setIndent("    ");
-            writer.setLenient(false);
+
+        try {
             Files.createDirectories(configDir);
-            gson.toJson(config, config.getClass(), writer);
+            try(JsonWriter writer = new JsonWriter(new FileWriter(configPath))) {
+                writer.setIndent("    ");
+                writer.setLenient(false);
+                gson.toJson(config, config.getClass(), writer);
+            }
         } catch(IOException e) {
             e.printStackTrace();
             return false;
