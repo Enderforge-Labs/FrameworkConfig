@@ -1,0 +1,28 @@
+{
+    "schemaVersion":1,
+    "id":"frameworkconfig",
+    "version":"${version}",
+    "name":"Framework Config",
+    "description":"Configuration library by UwU_Snek",
+    "authors":[ "UwU_Snek" ],
+    "contact":{},
+    "license":"MIT",
+    "icon":"assets/frameworkconfig/icon.png",
+    "environment":"*",
+    "entrypoints":{
+        "main":[
+            "com.snek.frameworkconfig.FrameworkConfig"
+        ],
+        "client":[]
+    },
+    "mixins":[
+        "frameworkconfig.mixins.json"
+    ],
+    "depends": {
+        "java": ">=17",
+        "minecraft": "~1.20.1",
+        "fabricloader": ">=0.16.10",
+        "fabric-api": "*"
+    },
+    "suggests":{}
+}
