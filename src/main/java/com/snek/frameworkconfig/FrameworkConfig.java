@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class FrameworkConfig implements ModInitializer {
     public static final String LIB_ID = "frameworkconfig";
-    public static final ResourceLocation INIT_PHASE_ID = new ResourceLocation(LIB_ID, "init");
+    public static final ResourceLocation PHASE_ID = new ResourceLocation(LIB_ID, "phase_id");
 
 
     @Override
@@ -18,7 +18,7 @@ public class FrameworkConfig implements ModInitializer {
 
 
         // Register initialization
-        ServerLifecycleEvents.SERVER_STARTING.register(INIT_PHASE_ID, server -> {
+        ServerLifecycleEvents.SERVER_STARTING.register(PHASE_ID, server -> {
             // Empty
         });
     }
