@@ -19,7 +19,7 @@ public class FrameworkConfig implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        System.out.println("FrameworkConfig loaded :3");
+        LOGGER.info("FrameworkConfig loaded :3");
 
 
         // Register initialization
