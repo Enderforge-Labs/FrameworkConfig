@@ -291,3 +291,6 @@ public abstract class ConfigManager {
         }
     }
 }
+
+//TODO add commands to reload configs on the fly
+//TODO suggest mod IDs in the command autocompletion
