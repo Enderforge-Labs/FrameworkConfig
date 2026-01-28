@@ -1,4 +1,4 @@
-package com.snek.frameworkconfig;
+package com.snek.frameworkconfig.config;
 
 
 

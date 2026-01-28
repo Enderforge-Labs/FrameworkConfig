@@ -1,4 +1,4 @@
-package com.snek.frameworkconfig;
+package com.snek.frameworkconfig.config;
 
 import java.io.File;
 import java.io.FileReader;
@@ -15,12 +15,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
-import com.snek.frameworkconfig.fields.ConstrainedConfigField;
-import com.snek.frameworkconfig.fields.DefaultConfigField;
-import com.snek.frameworkconfig.fields.ValueConfigField;
-import com.snek.frameworkconfig.fields.__ValueConfigFieldAdapter;
-import com.snek.frameworkconfig.fields.__ConstrainedConfigFieldAdapter;
-import com.snek.frameworkconfig.fields.__DefaultConfigFieldAdapter;
+import com.snek.frameworkconfig.FrameworkConfig;
+import com.snek.frameworkconfig.config.fields.ConstrainedConfigField;
+import com.snek.frameworkconfig.config.fields.DefaultConfigField;
+import com.snek.frameworkconfig.config.fields.ValueConfigField;
+import com.snek.frameworkconfig.config.fields.__ValueConfigFieldAdapter;
+import com.snek.frameworkconfig.config.fields.__ConstrainedConfigFieldAdapter;
+import com.snek.frameworkconfig.config.fields.__DefaultConfigFieldAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -138,6 +139,7 @@ public abstract class ConfigManager {
      * @param MOD_ID The ID of the mod.This must be unique for each mod on the server.
      * @return The config file instance.
      */
+    @SuppressWarnings("java:S1141") //! Nested try-catch
     public static <T extends ConfigFile> @Nullable T loadConfig(final @NotNull String configName, final @NotNull Class<T> configClass, final @NotNull String MOD_ID) {
 
 

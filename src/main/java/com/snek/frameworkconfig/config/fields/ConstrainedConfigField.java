@@ -1,4 +1,4 @@
-package com.snek.frameworkconfig.fields;
+package com.snek.frameworkconfig.config.fields;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
