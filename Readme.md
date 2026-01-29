@@ -1,6 +1,6 @@
 # FrameworkConfig
 
-A config and data management library for Fabric 1.20.1 with no dependencies.
+A config and data management library for Fabric 1.20.1.
 
 The library introduces a simplified API that automatically handles files and directories, allowing mods to have readable code and a more flexible structure.
 
@@ -8,8 +8,8 @@ The library introduces a simplified API that automatically handles files and dir
 
 ### Config files
 
-- Support for server configs
-- Support for per-player configs //TODO
+- Support for multiple server configs
+- Support for multiple per-player configs //TODO
 - Live config reloading //TODO
 - Live config changes //TODO
 - Automatically generated config commands for operators //TODO
