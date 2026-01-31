@@ -161,6 +161,8 @@ public abstract class DataManager<T extends DataEntry> {
     /**
      * Removes the data entry associated with the provided UUID from the runtime cache and removes its file.
      * <p>
+     * This also marks the data as not scheduled for save.
+     * <p>
      * Providing a UUID that doesn't exist in the cache has no effect.
      * @param uuid The UUID the data to remove is associated with.
      */
@@ -168,6 +170,7 @@ public abstract class DataManager<T extends DataEntry> {
     public void remove(final @NotNull UUID uuid) {
         final T prev = cache.remove(uuid);
         if(prev == null) return;
+        prev.markScheduledForSave(false);
         calcFilePath(uuid).toFile().delete();
     }
 
@@ -186,7 +189,7 @@ public abstract class DataManager<T extends DataEntry> {
      */
     public void schedule(final @NotNull UUID uuid, final @NotNull T data) {
         if(!data.isScheduledForSave()) {
-            scheduledForSaving.add(new Tuple<UUID, T>(uuid, data));
+            scheduledForSaving.add(new Tuple<>(uuid, data));
             data.markScheduledForSave(true);
         }
     }
