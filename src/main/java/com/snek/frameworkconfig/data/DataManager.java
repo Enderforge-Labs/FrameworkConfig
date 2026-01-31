@@ -87,6 +87,10 @@ public abstract class DataManager<T extends DataEntry> {
         this.dataId = dataId;
         this.serializer = serializer;
         this.fileExtension = fileExtension;
+
+        // Register save operations
+        ServerTickEvents.END_SERVER_TICK.register(server -> { saveScheduled(); });
+        //FIXME use a separate thread to save stuff to file. This improves server response times
     }
 
 
@@ -261,13 +265,17 @@ public abstract class DataManager<T extends DataEntry> {
 
 
 
-    /**
-     * Registers this data manager.
-     * <p>
-     * Each data manager instance must be registered during server initialization.
-     * This is required in order for them to work properly.
-     */
-    public void registerDataManager() {
-        ServerTickEvents.END_SERVER_TICK.register(server -> { saveScheduled(); });
-    }
+    // /**
+    //  * Registers this data manager.
+    //  * <p>
+    //  * Each data manager instance must be registered during server initialization.
+    //  * This is required in order for them to work properly.
+    //  * <p>
+    //  * Registering a static manager from the static initializer is allowed.
+    //  * The mod's onInitialize() can also be used.
+    //  */
+    // public void registerDataManager() {
+    //     ServerTickEvents.END_SERVER_TICK.register(server -> { saveScheduled(); });
+    //     //FIXME use a separate thread to save stuff to file. This improves server response times
+    // }
 }
