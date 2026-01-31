@@ -43,6 +43,13 @@ public abstract class DataManager<T extends DataEntry> {
     private final @NotNull List<Tuple<UUID, T>> scheduledForSaving = new LinkedList<>();
     private final @NotNull DataEntrySerializer<T> serializer;
 
+    // Getters
+    public @NotNull String                 getModId        () { return modId;         }
+    public @NotNull String                 getDataId       () { return dataId;        }
+    public @NotNull String                 getFileExtension() { return fileExtension; }
+    public @NotNull Map<UUID, T>           getCache        () { return cache;         }
+    public @NotNull DataEntrySerializer<T> getSerializer   () { return serializer;    }
+
 
 
 
