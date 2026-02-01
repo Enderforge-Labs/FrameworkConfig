@@ -173,6 +173,7 @@ public abstract class DataManager<T extends DataEntry> {
         if(prev == null) return;
         prev.markScheduledForSave(false);
         calcFilePath(uuid).toFile().delete();
+        prev.markDeleted();
         afterRemove(uuid, prev);
     }
     /**
@@ -181,7 +182,7 @@ public abstract class DataManager<T extends DataEntry> {
      * This is called each time a data entry is removed from the cache.
      * <p>
      * At this stage, the entry is not in the cache anymore and its file has been removed.
-     * It is also not scheduled for save anymore (if it ever was before).
+     * It is also not scheduled for save anymore (if it ever was before) and is marked as deleted ({@link DataEntry#isDeleted()}).
      * @param uuid The UUID the data was associated with.
      * @param data The data entry that was just removed from the cache.
      */
