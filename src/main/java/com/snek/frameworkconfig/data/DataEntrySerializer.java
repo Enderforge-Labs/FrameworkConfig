@@ -13,6 +13,7 @@ public abstract class DataEntrySerializer<T extends DataEntry> {
      * @return The serialized data as a string.
      */
     public abstract @NotNull String serialize(final @NotNull T data);
+    //TODO make these throw exceptions when parsing issues arise. catch them in the manager
 
 
     /**
@@ -21,4 +22,5 @@ public abstract class DataEntrySerializer<T extends DataEntry> {
      *     This is expected to be a serialized representation of an instance of the data, created using {@link #serialize(T)}.
      */
     public abstract @NotNull T deserialize(final @NotNull String string);
+    //TODO make these throw exceptions when parsing issues arise. catch them in the manager
 }

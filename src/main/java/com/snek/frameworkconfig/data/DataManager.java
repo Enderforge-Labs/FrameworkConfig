@@ -1,5 +1,6 @@
 package com.snek.frameworkconfig.data;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.snek.frameworkconfig.FrameworkConfig;
 
@@ -115,7 +117,7 @@ public abstract class DataManager<T extends DataEntry> {
      * @return The data, or null if the data couldn't be found.
      *     Requesting data that doesn't exist is considered an issue and makes this method log a warning.
      */
-    public T get(final @NotNull UUID uuid) {
+    public @Nullable T get(final @NotNull UUID uuid) {
 
         // Try to retrieve from the cache
         final T cachedData = cache.get(uuid);
@@ -123,23 +125,7 @@ public abstract class DataManager<T extends DataEntry> {
 
 
         // If the UUID is not cached, read from file. Return null if absent
-        final Path filePath = calcFilePath(uuid);
-        if(!Files.exists(filePath)) return null;
-        try {
-
-            // Load the data into the runtime map
-            final String rawData = Files.readString(filePath);
-            final T data = serializer.deserialize(rawData);
-            cache.put(uuid, data);
-            return data;
-        }
-
-
-        // If the file exists but cannot be read, return null
-        catch(final IOException e) {
-            FrameworkConfig.LOGGER.warn("Couldn't read the persistent data storage file {}. Treating it as non-existent.", filePath);
-            return null;
-        }
+        return loadFromFile(uuid);
     }
 
 
@@ -288,17 +274,85 @@ public abstract class DataManager<T extends DataEntry> {
 
 
 
-    // /**
-    //  * Registers this data manager.
-    //  * <p>
-    //  * Each data manager instance must be registered during server initialization.
-    //  * This is required in order for them to work properly.
-    //  * <p>
-    //  * Registering a static manager from the static initializer is allowed.
-    //  * The mod's onInitialize() can also be used.
-    //  */
-    // public void registerDataManager() {
-    //     ServerTickEvents.END_SERVER_TICK.register(server -> { saveScheduled(); });
-    //     //FIXME use a separate thread to save stuff to file. This improves server response times
-    // }
+    /**
+     * Reloads all data entries into the runtime cache, reading from their save files, after saving all existing modified entries.
+     * <p>
+     * This effectively merges the entries in the existing cache with the entries read from the files, prioritizing changes made through Minecraft.
+     * <p>
+     * Mods should call this when they want to reload the data after manual changes to their files,
+     * or if having all data entries loaded is required for the code to work correctly.
+     * <p>
+     * Notice:
+     * This skips lazy loading and can sometimes require a very high number of disk operations, creating lag spikes.
+     * Don't call this in a loop.
+     */
+    public void forceLoadAll() {
+
+        // Forcefully write modified entries to file
+        saveScheduled();
+
+
+        // For each file in the storage directory
+        for(final File file : calcDirPath().toFile().listFiles()) {
+
+            // Skip directories if for some reason any are present. They shouldn't be, though
+            if(file.isDirectory()) continue;
+
+            // Compute the UUID from the file's name, then load its data
+            final String fileName = file.getName();
+            try {
+                final UUID uuid = UUID.fromString(fileName.substring(0, fileName.length() - fileExtension.length()));
+                loadFromFile(uuid);
+            }
+
+            // Print a warning if the file is not recognized
+            catch(final IllegalArgumentException e) {
+                try {
+                    //! IllegalArgumentException: Bad UUID / not a UUID
+                    //! IndexOutOfBoundsException: Bad extension / bad file name. Anything that makes substring fail
+                    FrameworkConfig.LOGGER.warn("Unexpected file in storage directory: {}. This is not a FrameworkConfig storage file", file.getCanonicalPath());
+                    // continue
+                }
+                catch(IOException e2) {
+                    //! This IOException can be caused by getCanonicalPath.
+                    //! Just do nothing in this case, we have no idea what's going on anymore and the file isn't readable anyway.
+                    // let's continue...
+                }
+            }
+        }
+    }
+
+
+
+
+    /**
+     * Retrieves the data associated with the specified UUID by reading it from the storage file.
+     * <p>
+     * This method doesn't use the cache. It only reads from file. To use the cache, call {@link #get(UUID)}.
+     * @param uuid The UUID the data is associated with.
+     * @return The data, or null if the data couldn't be found.
+     *     Requesting data that doesn't exist is considered an issue and makes this method log a warning.
+     */
+    public @Nullable T loadFromFile(final @NotNull UUID uuid) {
+
+        // Calculate file path. If the file doesn't exist, return null
+        final Path filePath = calcFilePath(uuid);
+        if(!Files.exists(filePath)) return null;
+        try {
+
+            // Load the data into the runtime map
+            final String rawData = Files.readString(filePath);
+            final T data = serializer.deserialize(rawData);
+            cache.put(uuid, data);
+            afterPut(uuid, data);
+            return data;
+        }
+
+
+        // If the file exists but cannot be read, print a warning and return null
+        catch(final IOException e) {
+            FrameworkConfig.LOGGER.warn("Couldn't read the persistent data storage file {}. Treating it as non-existent.", filePath);
+            return null;
+        }
+    }
 }
