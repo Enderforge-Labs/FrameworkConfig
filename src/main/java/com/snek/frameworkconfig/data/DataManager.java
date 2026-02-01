@@ -98,7 +98,6 @@ public abstract class DataManager<T extends DataEntry> {
 
     /**
      * Creates a new DataManager.
-     * @param serializer The serializer used to convert data instances from and to a string.
      * @param modId The ID of the mod. This defines where the data is saved in the world files.
      * @param dataId The ID of the data manager. This identifies the data manager and contributes to the final path of the data files.
      * @param serializer An instance of the serializer class. This must be able to convert between {@link T} and a plain {@link String}.
