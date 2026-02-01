@@ -154,10 +154,21 @@ public abstract class DataManager<T extends DataEntry> {
      * @param uuid The UUID to associate the data with.
      * @param data The data entry to add and save.
      */
-    public void put(final @NotNull UUID uuid, final @NotNull T data) {
+    public final void put(final @NotNull UUID uuid, final @NotNull T data) {
         cache.put(uuid, data);
         schedule(uuid, data);
+        afterPut(uuid, data);
     }
+    /**
+     * Callback method for subclasses.
+     * <p>
+     * This is called each time a new data entry is added to the cache (which includes the time it's first loaded from disk).
+     * <p>
+     * At this stage, the entry is already present in the cache and could currently be scheduled for save.
+     * @param uuid The UUID the data is associated with.
+     * @param data The newly added data entry.
+     */
+    protected void afterPut(final @NotNull UUID uuid, final @NotNull T data) {}
 
 
 
@@ -171,12 +182,24 @@ public abstract class DataManager<T extends DataEntry> {
      * @param uuid The UUID the data to remove is associated with.
      */
     @SuppressWarnings({ "java:S899", "java:S4042" }) //! Return value of file.delete() ignored
-    public void remove(final @NotNull UUID uuid) {
+    public final void remove(final @NotNull UUID uuid) {
         final T prev = cache.remove(uuid);
         if(prev == null) return;
         prev.markScheduledForSave(false);
         calcFilePath(uuid).toFile().delete();
+        afterRemove(uuid, prev);
     }
+    /**
+     * Callback method for subclasses.
+     * <p>
+     * This is called each time a data entry is removed from the cache.
+     * <p>
+     * At this stage, the entry is not in the cache anymore and its file has been removed.
+     * It is also not scheduled for save anymore (if it ever was before).
+     * @param uuid The UUID the data was associated with.
+     * @param data The data entry that was just removed from the cache.
+     */
+    protected void afterRemove(final @NotNull UUID uuid, final @NotNull T data) {}
 
 
 
