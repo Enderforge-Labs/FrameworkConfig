@@ -227,10 +227,11 @@ public abstract class DataManager<T extends DataEntry> {
 
 
 
+    //FIXME make this async from a specialized thread
     /**
      * Saves all scheduled data entries.
      * This must be called at the end of each server tick.
-     */
+    */
     private void saveScheduled() {
 
         // Create directory for this manager's persistent data
@@ -283,13 +284,14 @@ public abstract class DataManager<T extends DataEntry> {
      * or if having all data entries loaded is required for the code to work correctly.
      * <p>
      * Notice:
-     * This skips lazy loading and can sometimes require a very high number of disk operations, creating lag spikes.
+     * This is done on the caller's thread. If async loading is an option, you should call this from a separate thread.
+     * This method skips lazy loading and can sometimes require a very high number of disk operations, creating lag spikes.
      * Don't call this in a loop.
      */
     public void forceLoadAll() {
 
         // Forcefully write modified entries to file
-        saveScheduled();
+        saveScheduled(); //FIXME this is gonna be async. which is bad. call it not async and wait for the data to get flushed to file before reading
 
 
         // For each file in the storage directory
@@ -306,7 +308,7 @@ public abstract class DataManager<T extends DataEntry> {
             }
 
             // Print a warning if the file is not recognized
-            catch(final IllegalArgumentException e) {
+            catch(final IllegalArgumentException | IndexOutOfBoundsException e) {
                 try {
                     //! IllegalArgumentException: Bad UUID / not a UUID
                     //! IndexOutOfBoundsException: Bad extension / bad file name. Anything that makes substring fail
@@ -329,6 +331,9 @@ public abstract class DataManager<T extends DataEntry> {
      * Retrieves the data associated with the specified UUID by reading it from the storage file.
      * <p>
      * This method doesn't use the cache. It only reads from file. To use the cache, call {@link #get(UUID)}.
+     * <p>
+     * Notice:
+     * This is done on the caller's thread. If async loading is an option, you should call this from a separate thread.
      * @param uuid The UUID the data is associated with.
      * @return The data, or null if the data couldn't be found.
      *     Requesting data that doesn't exist is considered an issue and makes this method log a warning.
