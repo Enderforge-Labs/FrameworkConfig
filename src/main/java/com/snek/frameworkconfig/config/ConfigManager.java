@@ -37,6 +37,7 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class ConfigManager {
     public static final @NotNull String MARKER_FILE_NAME = ":3";
+    public static final @NotNull String MARKER_FILE_NAME_WINDOWS = "COLON_THREE";
     public static final @NotNull String MARKER_FILE_CONTENTS = "🦊";
 
 
@@ -256,7 +257,9 @@ public abstract class ConfigManager {
 
 
 
-
+    private static String getMarkerFileName() {
+        return System.getProperty("os.name").toLowerCase().contains("win") ? MARKER_FILE_NAME_WINDOWS : MARKER_FILE_NAME;
+    }
 
 
 
@@ -271,14 +274,14 @@ public abstract class ConfigManager {
         // If the directory doesn't exist, create it and write the marker file
         if(!Files.exists(dirPath)) {
             Files.createDirectories(dirPath);
-            Path markerFile = dirPath.resolve(MARKER_FILE_NAME);
+            Path markerFile = dirPath.resolve(getMarkerFileName());
             Files.writeString(markerFile, MARKER_FILE_CONTENTS);
         }
 
 
         // If the directory exists, check for the marker file
         else {
-            Path markerFile = dirPath.resolve(MARKER_FILE_NAME);
+            Path markerFile = dirPath.resolve(getMarkerFileName());
 
             // Raise exception if the marker file is not there
             if (!Files.exists(markerFile)) {
