@@ -98,6 +98,14 @@ publishing {
     }
 
     repositories {
+        maven {
+            name = "Katze_Maven"
+            url = "https://maven.herrkatze.com/snapshots"
+            credentials {
+                username = System.getenv("REPOSILITE_USERNAME")
+                password = System.getenv("REPOSILITE_TOKEN")
+            }
+        }
         mavenLocal()
     }
 }
